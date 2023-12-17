@@ -286,6 +286,7 @@ const getUnknownMessage = () => {
 const getNonAdminMessage = (session) => {
     let msg = `You have not admin role. \n\n If you want to get admin role, please contact <a href="https://t.me/CryptoSnowPrince">CryptoSnowPrince</a>`
     if (session.type !== 'private') {
+        // return `${msg} with your chait id! \n Your chatid is ${session.chatid}.`
         return `${msg}!`;
     } else {
         return `${msg} with your chait id! \n Your chatid is ${session.chatid}.`
@@ -495,17 +496,16 @@ bot.on('message', async (message) => {
         } else if (global.setting_state === SETTING_STATE_WAIT_CHANNEL) {
             if (message.text && Number(message.text)) {
                 global.channel_id = Number(message.text)
-                global.setting_state = SETTING_STATE_IDLE
                 await bot.sendMessage(session.chatid, `✅ Successfully updated the channel!`, sendMessageOption)
             } else {
                 await bot.sendMessage(session.chatid, `😢 Sorry, Invalid channel, Please enter the valid channel id.`, sendMessageOption)
             }
+            global.setting_state = SETTING_STATE_IDLE
         } else if (global.setting_state === SETTING_STATE_WAIT_ADMIN) {
             if (message.text && Number(message.text)) {
                 const bSuccess = addAdmin(Number(message.text))
                 if (bSuccess) {
                     global.new_admin_id = Number(message.text)
-                    global.setting_state = SETTING_STATE_IDLE
                     await bot.sendMessage(session.chatid, `✅ Successfully added new admin!`, sendMessageOption)
                 } else {
                     await bot.sendMessage(session.chatid, `😢 Error to add new admin! \nPlease ask requester about chatid again.`, sendMessageOption)
@@ -513,6 +513,7 @@ bot.on('message', async (message) => {
             } else {
                 await bot.sendMessage(session.chatid, `😢 Sorry, Invalid admin id, Please enter the valid admin id.`, sendMessageOption)
             }
+            global.setting_state = SETTING_STATE_IDLE
         } else {
             await bot.sendMessage(session.chatid, `😢 Sorry, Something went wrong! Please try again later!`, sendMessageOption)
             return;
