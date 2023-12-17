@@ -10,7 +10,7 @@ const token = process.env.TELEGRAM_BOT_TOKEN
 const bot_manager = process.env.BOT_MANAGER
 const bot_manager_dev = process.env.BOT_MANAGER_DEV
 const default_channel = Number(process.env.DEFAULT_CHANNEL_ID)
-const default_admin = Number(bot_manager)
+// const default_admin = Number(bot_manager)
 
 const bot = new TelegramBot(token, { polling: true })
 
@@ -255,8 +255,8 @@ const global = {
     decimals: 0,
     channel_id: default_channel,
     channel_id_2: default_channel,
-    new_admin_id: default_admin,
-    chainid: CHAIN_BSC,
+    // new_admin_id: default_admin,
+    // chainid: CHAIN_BSC,
     setting_state: SETTING_STATE_IDLE,
     running_state: RUNNING_STATE_STOP
 }
@@ -352,7 +352,7 @@ bot.on('message', async (message) => {
                 return
             } else if (command === BOT_COMMAND_SET_COUNTDOWN_PERIOD) {
                 global.setting_state = SETTING_STATE_WAIT_COUNTDOWN_PERIOD;
-                await bot.sendMessage(session.chatid, 'Please enter countdown period!', sendMessageOption)
+                await bot.sendMessage(session.chatid, 'Please enter countdown timer in hour!', sendMessageOption)
                 return
                 // } else if (command === BOT_COMMAND_SET_COUNTDOWN_TIMER) {
                 //     global.setting_state = SETTING_STATE_WAIT_COUNTDOWN_TIMER;
@@ -558,7 +558,7 @@ const sleep = ms => new Promise(r => setTimeout(r, ms))
 
 const isValidToken = async () => {
     try {
-        const web3 = new Web3(global.chainid.chainRPC);
+        const web3 = new Web3(CHAIN_BSC.chainRPC);
         const contract = new web3.eth.Contract(CONTRACT_ABI, global.tokenAddress);
         const symbol = await contract.methods.symbol().call();
         await sleep(1000);
@@ -598,8 +598,8 @@ const isValidCompetition = async () => {
         return ERROR_TOKEN_BURN_CHANNEL
     } else if (!global.videoFile) {
         return ERROR_VIDEO_FILE
-    } else if (!global.chainid.chainID) {
-        return ERROR_CHAIN_ID
+    // } else if (!global.chainid.chainID) {
+    //     return ERROR_CHAIN_ID
     } else if (!global.channel_id) {
         return ERROR_CHANNEL_ID
     } else if (!global.channel_id_2) {
@@ -618,7 +618,7 @@ const gCompInfo = {
     tokenAddress: global.tokenAddress,
     minBurn: global.minimumBurnAmount,
     curMinBurn: global.minimumBurnAmount,
-    curCntDownPeriod: global.countdownPeriod,
+    curCntDownPeriod: global.countdownPeriod * 3600,
     // curCntDownTimer: global.countdownTimer,
     prizeAmount: global.prizeAmount,
     incBurn: global.increaseBurnAmount,
@@ -632,7 +632,7 @@ const gCompInfo = {
     decimals: global.decimals,
     channel_id: global.channel_id,
     channel_id_2: global.channel_id_2,
-    chainid: global.chainid,
+    // chainid: global.chainid,
 
     curCntDown: 0,
     totalBurn: 0,
@@ -701,7 +701,7 @@ const startCompetition = async () => {
             gCompInfo.decimals = global.decimals;
             gCompInfo.channel_id = global.channel_id;
             gCompInfo.channel_id_2 = global.channel_id_2;
-            gCompInfo.chainid = global.chainid
+            // gCompInfo.chainid = global.chainid
 
             gCompInfo.curCntDown = Math.floor(Date.now() / 1000) + gCompInfo.curCntDownPeriod - 1;
             gCompInfo.totalBurn = 0;
@@ -742,8 +742,8 @@ const competitionMessage = async (msgType, newBurner = '') => {
         const pHours = Math.floor((period / (60 * 60)) % 24);
         const pDays = Math.floor((period / (60 * 60 * 24)));
 
-        const tokenLink = `<a href="${gCompInfo.chainid.chainScan}/token/${gCompInfo.tokenAddress}">$TOKEN</a>`
-        const tokensLink = `<a href="${gCompInfo.chainid.chainScan}/token/${gCompInfo.tokenAddress}">$TOKENS</a>`
+        const tokenLink = `<a href="${CHAIN_BSC.chainScan}/token/${gCompInfo.tokenAddress}">$TOKEN</a>`
+        const tokensLink = `<a href="${CHAIN_BSC.chainScan}/token/${gCompInfo.tokenAddress}">$TOKENS</a>`
 
         if (msgType == MESSAGE_TYPE_START_COMPETITION) { // New Competition
             msg = `<b>📣 ${tokenLink} LAST BURN COMPETITION STARTED</b>\n\n`;
@@ -769,7 +769,7 @@ const competitionMessage = async (msgType, newBurner = '') => {
             msg = `<b>📣 WE HAVE A NEW BURNER!</b>\n\n`;
 
             msg += `🔄 The minimum burn and countdown have been reset!\n\n`;
-            msg += `<b>🔥 NEW BURNER:</b> <a href="${gCompInfo.chainid.chainScan}/address/${newBurner}">${newBurner.substring(0, 5)}...${newBurner.substring(36)}</a>\n`;
+            msg += `<b>🔥 NEW BURNER:</b> <a href="${CHAIN_BSC.chainScan}/address/${newBurner}">${newBurner.substring(0, 5)}...${newBurner.substring(36)}</a>\n`;
             msg += `<b>🔥 CURRENT MIN BURN:</b> ${gCompInfo.curMinBurn} ${tokensLink}\n`;
             msg += `<b>⏰ COUNTDOWN:</b> ${hours}:${minutes}:${seconds}\n`;
             msg += `<b>🏆 PRIZE:</b> ${gCompInfo.prizeAmount} BUSD\n\n`;
@@ -780,13 +780,13 @@ const competitionMessage = async (msgType, newBurner = '') => {
         } else if (msgType === MESSAGE_TYPE_WINNER) { // Winner
             msg = `<b>🏁 WE HAVE A WINNER!</b>\n\n`;
 
-            msg += `<b>🏆 WINNER:</b> <a href="${gCompInfo.chainid.chainScan}/address/${gCompInfo.winner}">${gCompInfo.winner.substring(0, 5)}...${gCompInfo.winner.substring(36)}</a>\n`;
+            msg += `<b>🏆 WINNER:</b> <a href="${CHAIN_BSC.chainScan}/address/${gCompInfo.winner}">${gCompInfo.winner.substring(0, 5)}...${gCompInfo.winner.substring(36)}</a>\n`;
             msg += `<b>🤑 PRIZE:</b> ${gCompInfo.prizeAmount} BUSD\n`;
             msg += `<b>🔥 TOTAL ${tokenLink} BURNED:</b> ${gCompInfo.totalBurn}\n\n`;
             msg += `🎁 AIRDROP RECEIPIENTS: As a token of our appreciation every participant of this competition will receive an airdrop of the next token we launch.\n\n`;
 
             for (let i = 0; i < gCompInfo.airdrop.length; i++) {
-                msg += `<a href="${gCompInfo.chainid.chainScan}/address/${gCompInfo.airdrop[i]}">${gCompInfo.airdrop[i]}</a>\n`;
+                msg += `<a href="${CHAIN_BSC.chainScan}/address/${gCompInfo.airdrop[i]}">${gCompInfo.airdrop[i]}</a>\n`;
             }
         } else {
             return;
@@ -795,7 +795,7 @@ const competitionMessage = async (msgType, newBurner = '') => {
         const keyboard = {
             inline_keyboard: [
                 [
-                    { text: 'BURN ADDRESS', url: `${gCompInfo.chainid.chainScan}/address/${gCompInfo.burnAddress}` }
+                    { text: 'BURN ADDRESS', url: `${CHAIN_BSC.chainScan}/address/${gCompInfo.burnAddress}` }
                 ],
                 [
                     { text: `BUY $TOKEN`, url: gCompInfo.buyTokenLink }
@@ -849,7 +849,7 @@ let startBN;
 
 async function initBurnMonitor() {
     try {
-        const web3 = new Web3(gCompInfo.chainid.chainRPC);
+        const web3 = new Web3(CHAIN_BSC.chainRPC);
         startBN = Number(await web3.eth.getBlockNumber())
     } catch (error) {
         console.log('initCompetition error')
@@ -866,7 +866,7 @@ async function burnMonitor() {
         return
     }
     try {
-        const web3 = new Web3(gCompInfo.chainid.chainRPC);
+        const web3 = new Web3(CHAIN_BSC.chainRPC);
         latestBN = Number(await web3.eth.getBlockNumber())
         const contract = new web3.eth.Contract(CONTRACT_ABI, gCompInfo.tokenAddress);
         if (latestBN >= startBN) {
