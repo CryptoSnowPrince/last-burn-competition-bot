@@ -879,7 +879,7 @@ async function startTimers() {
 
     burnMonitorId = setInterval(async () => {
         await burnMonitor()
-    }, 1200);
+    }, 12000);
 
     // Burn Amount Increase Monitor
     if (burnIncMonitorId) {
