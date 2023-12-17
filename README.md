@@ -30,19 +30,18 @@ npm start
 help - help
 start - start bot
 startcompetition - start competition
-stopcompetition - stop competition
+endcompetition - end competition
 set_minimum_burn_amount - set minimum burn amount
 set_increase_burn_amount - set increase burn amount
-set_countdown_period - set countdown period
 set_countdown_timer - set countdown timer
 set_prize_amount - set prize amount
 set_burn_address - set burn address
 set_token_address - set token address
 set_buy_token_link - set buy token link
-set_burn_channel - set burn channel
+set_burn_channel_link - set burn channel link
 set_video - set video
-set_channel - set channel
-set_admin - set admin
+set_channel_1 - set channel 1 id
+set_channel_2 - set channel 2 id
 show_info - show info
 ```
 
