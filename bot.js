@@ -10,6 +10,7 @@ const token = process.env.TELEGRAM_BOT_TOKEN
 const bot_manager = process.env.BOT_MANAGER
 const bot_manager_dev = process.env.BOT_MANAGER_DEV
 const default_channel = Number(process.env.DEFAULT_CHANNEL_ID)
+const default_channel_2 = Number(process.env.DEFAULT_CHANNEL_ID_2)
 // const default_admin = Number(bot_manager)
 
 const bot = new TelegramBot(token, { polling: true })
@@ -254,7 +255,7 @@ const global = {
     symbol: '$TOKEN',
     decimals: 0,
     channel_id: default_channel,
-    channel_id_2: default_channel,
+    channel_id_2: default_channel_2,
     // new_admin_id: default_admin,
     // chainid: CHAIN_BSC,
     setting_state: SETTING_STATE_IDLE,
@@ -302,7 +303,7 @@ const getNonAdminMessage = (session) => {
 bot.on('message', async (message) => {
     try {
         // console.log('message')
-        // console.log(message)
+        console.log(message)
         // const sessionId = getSessionId(message)
         const session = initSession(message)
 
@@ -687,7 +688,7 @@ const startCompetition = async () => {
             gCompInfo.tokenAddress = global.tokenAddress;
             gCompInfo.minBurn = global.minimumBurnAmount;
             gCompInfo.curMinBurn = global.minimumBurnAmount;
-            gCompInfo.curCntDownPeriod = global.countdownPeriod;
+            gCompInfo.curCntDownPeriod = global.countdownPeriod * 3600;
             // gCompInfo.curCntDownTimer = global.countdownTimer * 1000;
             gCompInfo.prizeAmount = global.prizeAmount;
             gCompInfo.incBurn = global.increaseBurnAmount;
