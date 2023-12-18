@@ -301,7 +301,7 @@ const getNonAdminMessage = (session) => {
 bot.on('message', async (message) => {
     try {
         // console.log('message')
-        console.log(message)
+        // console.log(message)
         console.log(message.chat.id)
         console.log(message.text)
         // const sessionId = getSessionId(message)
