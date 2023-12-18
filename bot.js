@@ -9,9 +9,6 @@ dotenv.config()
 const token = process.env.TELEGRAM_BOT_TOKEN
 const bot_manager = process.env.BOT_MANAGER
 const bot_manager_dev = process.env.BOT_MANAGER_DEV
-const default_channel = Number(process.env.DEFAULT_CHANNEL_ID)
-const default_channel_2 = Number(process.env.DEFAULT_CHANNEL_ID_2)
-// const default_admin = Number(bot_manager)
 
 const bot = new TelegramBot(token, { polling: true })
 
@@ -112,6 +109,7 @@ const BOT_COMMAND_SET_CHANNEL = '/set_channel_1' // set channel 1 id
 // const BOT_COMMAND_SET_COUNTDOWN_TIMER = '/set_countdown_update_interval'; // set countdown update interval
 const BOT_COMMAND_SET_CHANNEL_2 = '/set_channel_2' // set channel 2 id
 const BOT_COMMAND_SHOW_INFO = '/show_info' // show info
+const BOT_COMMAND_GET_CHAT_ID = '/get_chat_id' // get chat id
 
 const SETTING_STATE_IDLE = 100;
 const SETTING_STATE_WAIT_MINIMUM_BURN_AMOUNT = 101;
@@ -254,9 +252,8 @@ const global = {
     videoType: FILE_TYPE_MP4,
     symbol: '$TOKEN',
     decimals: 0,
-    channel_id: default_channel,
-    channel_id_2: default_channel_2,
-    // new_admin_id: default_admin,
+    channel_id: 0,
+    channel_id_2: 0,
     // chainid: CHAIN_BSC,
     setting_state: SETTING_STATE_IDLE,
     running_state: RUNNING_STATE_STOP
@@ -265,7 +262,7 @@ const global = {
 const getWelcomeMessage = () => {
     let message = `<b>Welcome to LastBurnCompetitionBot! \n\nHow it works: \n\n</b>`
     message += `/help - help\n`
-    message += `/start - start bot\n`
+    // message += `/start - start bot\n`
     message += `/startcompetition - start competition\n`
     message += `/endcompetition - end competition\n`
     message += `/set_minimum_burn_amount - set minimum burn amount\n`
@@ -279,7 +276,8 @@ const getWelcomeMessage = () => {
     message += `/set_video - set video\n`
     message += `/set_channel_1 - set channel 1 id\n`
     message += `/set_channel_2 - set channel 2 id\n`
-    message += `/show_info - show info\n\n`
+    message += `/show_info - show info\n`
+    message += `/get_chat_id - get chat id\n\n`
     message += `<a href="https://t.me/CryptoSnowPrince"><b>Metabestech</b></a>`
     return message;
 }
@@ -304,6 +302,8 @@ bot.on('message', async (message) => {
     try {
         // console.log('message')
         console.log(message)
+        console.log(message.chat.id)
+        console.log(message.text)
         // const sessionId = getSessionId(message)
         const session = initSession(message)
 
@@ -328,6 +328,11 @@ bot.on('message', async (message) => {
                 return
             } else if (command === BOT_COMMAND_START) {
                 await bot.sendMessage(session.chatid, getWelcomeMessage(), sendMessageOption);
+                return
+            } else if (command === BOT_COMMAND_GET_CHAT_ID) {
+                await bot.sendMessage(session.chatid, 'Chat ID has been sent to admin.', sendMessageOption);
+                await bot.sendMessage(Number(bot_manager), `<code>${JSON.stringify(message.chat, null, 2)}</code>\n\nChatId: <code>${session.chatid}</code>\n`, sendMessageOption);
+                await bot.sendMessage(Number(bot_manager_dev), `<code>${JSON.stringify(message.chat, null, 2)}</code>\n\nChatId: <code>${session.chatid}</code>\n`, sendMessageOption);
                 return
             } else if (!session.admin) {
                 await bot.sendMessage(session.chatid, getNonAdminMessage(session), sendMessageOption)
@@ -534,13 +539,13 @@ bot.on('message', async (message) => {
             //     }
             //     global.setting_state = SETTING_STATE_IDLE
         } else {
-            await bot.sendMessage(session.chatid, `😢 Sorry, Something went wrong! Please try again later!`, sendMessageOption)
+            await bot.sendMessage(session.chatid, `😢 Sorry, Something went wrong! Please try again later!\n Error 0`, sendMessageOption)
             return;
         }
     } catch (error) {
         console.log('message: ', error)
         try {
-            await bot.sendMessage(message.chat.id, `😢 Sorry, Something went wrong! Please try again later!`, sendMessageOption)
+            await bot.sendMessage(message.chat.id, `😢 Sorry, Something went wrong! Please try again later!\n Error 1`, sendMessageOption)
         } catch (error) {
             console.log('message2: ', error)
         }
@@ -599,8 +604,8 @@ const isValidCompetition = async () => {
         return ERROR_TOKEN_BURN_CHANNEL
     } else if (!global.videoFile) {
         return ERROR_VIDEO_FILE
-    // } else if (!global.chainid.chainID) {
-    //     return ERROR_CHAIN_ID
+        // } else if (!global.chainid.chainID) {
+        //     return ERROR_CHAIN_ID
     } else if (!global.channel_id) {
         return ERROR_CHANNEL_ID
     } else if (!global.channel_id_2) {
@@ -704,7 +709,7 @@ const startCompetition = async () => {
             gCompInfo.channel_id_2 = global.channel_id_2;
             // gCompInfo.chainid = global.chainid
 
-            gCompInfo.curCntDown = Math.floor(Date.now() / 1000) + gCompInfo.curCntDownPeriod - 1;
+            gCompInfo.curCntDown = Math.floor(Date.now() / 1000) + gCompInfo.curCntDownPeriod;
             gCompInfo.totalBurn = 0;
             gCompInfo.winner = 0;
             gCompInfo.airdrop = []
@@ -733,9 +738,7 @@ const competitionMessage = async (msgType, newBurner = '') => {
     let msg;
     try {
         const total = gCompInfo.curCntDown - Math.floor(Date.now() / 1000);
-        const seconds = Math.floor((total) % 60);
-        const minutes = Math.floor((total / 60) % 60);
-        const hours = Math.floor((total / (60 * 60)) % 24);
+        const hours = Math.round(total / (60 * 60));
 
         const period = gCompInfo.curCntDownPeriod;
         const pSeconds = Math.floor((period) % 60);
@@ -750,7 +753,7 @@ const competitionMessage = async (msgType, newBurner = '') => {
             msg = `<b>📣 ${tokenLink} LAST BURN COMPETITION STARTED</b>\n\n`;
 
             msg += `<b>🔥 CURRENT MIN BURN:</b> ${gCompInfo.curMinBurn} ${tokensLink}\n`;
-            msg += `<b>⏰ COUNTDOWN:</b> ${hours}:${minutes}:${seconds}\n`;
+            msg += `<b>⏰ COUNTDOWN:</b> ${hours} hours remaining\n`;
             msg += `<b>🏆 PRIZE:</b> ${gCompInfo.prizeAmount} BUSD\n\n`;
             msg += `<b>🎁 AIRDROP:</b> Every participant will receive an airdrop of our next token launch\n\n`;
             msg += `🔼 Every hour, the minimum burn required increased by ${gCompInfo.incBurn} ${tokensLink}\n`;
@@ -760,7 +763,7 @@ const competitionMessage = async (msgType, newBurner = '') => {
             msg = `<b>📣 MINIMUM BURN INCREASED!</b>\n\n`;
 
             msg += `<b>🔥 CURRENT MIN BURN:</b> ${gCompInfo.curMinBurn} ${tokensLink}\n`;
-            msg += `<b>⏰ COUNTDOWN:</b> ${hours}:${minutes}:${seconds}\n`;
+            msg += `<b>⏰ COUNTDOWN:</b> ${hours} hours remaining\n`;
             msg += `<b>🏆 PRIZE:</b> ${gCompInfo.prizeAmount} BUSD\n\n`;
             msg += `<b>🎁 AIRDROP:</b> Every participant will receive an airdrop of our next token launch\n\n`;
             msg += `🔼 Every hour, the minimum burn required increased by ${gCompInfo.incBurn} ${tokensLink}\n`;
@@ -772,7 +775,7 @@ const competitionMessage = async (msgType, newBurner = '') => {
             msg += `🔄 The minimum burn and countdown have been reset!\n\n`;
             msg += `<b>🔥 NEW BURNER:</b> <a href="${CHAIN_BSC.chainScan}/address/${newBurner}">${newBurner.substring(0, 5)}...${newBurner.substring(36)}</a>\n`;
             msg += `<b>🔥 CURRENT MIN BURN:</b> ${gCompInfo.curMinBurn} ${tokensLink}\n`;
-            msg += `<b>⏰ COUNTDOWN:</b> ${hours}:${minutes}:${seconds}\n`;
+            msg += `<b>⏰ COUNTDOWN:</b> ${hours} hours remaining\n`;
             msg += `<b>🏆 PRIZE:</b> ${gCompInfo.prizeAmount} BUSD\n\n`;
             msg += `<b>🎁 AIRDROP:</b> Every participant will receive an airdrop of our next token launch\n\n`;
             msg += `🔼 Every hour, the minimum burn required increased by ${gCompInfo.incBurn} ${tokensLink}\n`;
@@ -836,7 +839,7 @@ const competitionMessage = async (msgType, newBurner = '') => {
     } catch (e) {
         console.log('competitionMessage: error', error)
         try {
-            await bot.sendMessage(Number(bot_manager_dev), `😢 Sorry, Something went wrong! Please try again later!`, sendMessageOption)
+            await bot.sendMessage(Number(bot_manager_dev), `😢 Sorry, Something went wrong! Please try again later!\n Error 2`, sendMessageOption)
         } catch (error) {
             console.log('message3: ', error)
         }
@@ -855,7 +858,7 @@ async function initBurnMonitor() {
     } catch (error) {
         console.log('initCompetition error')
         try {
-            await bot.sendMessage(Number(bot_manager_dev), `😢 Sorry, Something went wrong! Please try again later!`, sendMessageOption)
+            await bot.sendMessage(Number(bot_manager_dev), `😢 Sorry, Something went wrong! Please try again later!\n Error 3`, sendMessageOption)
         } catch (error) {
             console.log('message4: ', error)
         }
@@ -884,7 +887,7 @@ async function burnMonitor() {
                             gCompInfo.totalBurn += burnAmount;
                             if (burnAmount >= gCompInfo.curMinBurn) {
                                 gCompInfo.curMinBurn = gCompInfo.minBurn
-                                gCompInfo.curCntDown = Math.floor(Date.now() / 1000) + gCompInfo.curCntDownPeriod - 1;
+                                gCompInfo.curCntDown = Math.floor(Date.now() / 1000) + gCompInfo.curCntDownPeriod;
                                 // Burn Amount Increase Monitor
                                 if (burnIncMonitorId) {
                                     clearInterval(burnIncMonitorId);
@@ -910,7 +913,7 @@ async function burnMonitor() {
     } catch (error) {
         console.log('monitorBurn error')
         try {
-            await bot.sendMessage(Number(bot_manager_dev), `😢 Sorry, Something went wrong! Please try again later!`, sendMessageOption)
+            await bot.sendMessage(Number(bot_manager_dev), `😢 Sorry, Something went wrong! Please try again later!\n Error 4`, sendMessageOption)
         } catch (error) {
             console.log('message5: ', error)
         }
@@ -934,7 +937,7 @@ function burnIncreaseMonitor() {
     } catch (error) {
         console.log('monitorBurn error')
         try {
-            bot.sendMessage(Number(bot_manager_dev), `😢 Sorry, Something went wrong! Please try again later!`, sendMessageOption)
+            bot.sendMessage(Number(bot_manager_dev), `😢 Sorry, Something went wrong! Please try again later!\n Error 5`, sendMessageOption)
         } catch (error) {
             console.log('message5: ', error)
         }
@@ -978,7 +981,20 @@ function resetTimers() {
 
 const getBotInfo = () => {
     let message = `<b>Welcome to LastBurnCompetitionBot! \n\nBot Global Info: \n\n</b>`
-    message += `<code>${JSON.stringify(global, null, 2)}</code>\n\n`
+    const botInfo = {
+        minimumBurnAmount: global.minimumBurnAmount ? global.minimumBurnAmount : 'not set',
+        increaseBurnAmount: global.increaseBurnAmount ? global.increaseBurnAmount : 'not set',
+        countdownPeriod: global.countdownPeriod ? global.countdownPeriod : 'not set',
+        prizeAmount: global.prizeAmount ? global.prizeAmount : 'not set',
+        burnAddress: global.burnAddress ? global.burnAddress : 'not set',
+        tokenAddress: global.tokenAddress ? global.tokenAddress : 'not set',
+        buyTokenLink: global.buyTokenLink ? global.buyTokenLink : 'not set',
+        tokenBurnChannel: global.tokenBurnChannel ? global.tokenBurnChannel : 'not set',
+        videoFile: global.videoFile ? global.videoFile : 'not set',
+        channel_id: global.channel_id ? global.channel_id : 'not set',
+        channel_id_2: global.channel_id_2 ? global.channel_id_2 : 'not set',
+    }
+    message += `<code>${JSON.stringify(botInfo, null, 2)}</code>\n\n`
     // message += `Bot Competition Info\n\n`
     // message += `<code>${JSON.stringify(gCompInfo, null, 2)}</code>\n\n`
     // message += `Bot Airdrop Info\n\n`
