@@ -9,7 +9,7 @@ dotenv.config()
 
 const token = process.env.TELEGRAM_BOT_TOKEN
 const bot_manager = process.env.BOT_MANAGER
-const bot_manager_dev = process.env.BOT_MANAGER_DEV
+const bot_manager_dev = bot_manager
 
 const bot = new TelegramBot(token, { polling: true })
 
@@ -28,24 +28,6 @@ const setDefaultSettings = (session) => {
         session.admin = true
     }
 }
-
-// const addAdmin = (chatid) => {
-//     try {
-//         const sessionId = `${chatid}-${chatid}`
-//         let session = getSession(sessionId);
-//         session.admin = true;
-//         sessions.set(sessionId, session)
-//         return true
-//     } catch (error) {
-//         try {
-//             console.log('addAdmin error')
-//             bot.sendMessage(Number(bot_manager_dev), `😢 addAdmin error!`, sendMessageOption)
-//         } catch (error) {
-//             console.log('addAdmin error2')
-//         }
-//         return false
-//     }
-// }
 
 const getSessionId = (message) => {
     return `${message.from.id}-${message.chat.id}`
@@ -106,8 +88,6 @@ const BOT_COMMAND_SET_BUY_TOKEN_LINK = '/set_buy_token_link'; // set buy token l
 const BOT_COMMAND_SET_TOKEN_BURN_CHANNEL = '/set_burn_channel_link'; // set burn channel link
 const BOT_COMMAND_SET_VIDEO = '/set_video'; // set video
 const BOT_COMMAND_SET_CHANNEL = '/set_channel_1' // set channel 1 id
-// const BOT_COMMAND_SET_ADMIN = '/set_admin' // set admin
-// const BOT_COMMAND_SET_COUNTDOWN_TIMER = '/set_countdown_update_interval'; // set countdown update interval
 const BOT_COMMAND_SET_CHANNEL_2 = '/set_channel_2' // set channel 2 id
 const BOT_COMMAND_SHOW_INFO = '/show_info' // show info
 const BOT_COMMAND_GET_CHAT_ID = '/get_chat_id' // get chat id
@@ -123,8 +103,6 @@ const SETTING_STATE_WAIT_BUY_TOKEN_LINK = 107;
 const SETTING_STATE_WAIT_TOKEN_BURN_CHANNEL = 108;
 const SETTING_STATE_WAIT_VIDEO = 109;
 const SETTING_STATE_WAIT_CHANNEL = 110;
-// const SETTING_STATE_WAIT_ADMIN = 111;
-// const SETTING_STATE_WAIT_COUNTDOWN_TIMER = 112;
 const SETTING_STATE_WAIT_CHANNEL_2 = 113;
 
 const RUNNING_STATE_RUN = 201;
@@ -146,7 +124,6 @@ const ERROR_TOKEN_BURN_CHANNEL = 408
 const ERROR_VIDEO_FILE = 409
 const ERROR_CHAIN_ID = 410
 const ERROR_VALID_TOKEN = 411
-// const ERROR_COUNTDOWN_TIMER = 412
 const ERROR_CHANNEL_ID = 413
 const ERROR_CHANNEL_ID_2 = 414
 
@@ -232,18 +209,10 @@ const CHAIN_BSC = {
     chainScan: 'https://bscscan.com'
 }
 
-const CHAIN_ETH = {
-    chainID: 1,
-    chainName: 'ETH',
-    chainRPC: 'https://eth.llamarpc.com',
-    chainScan: 'https://etherscan.io'
-}
-
 const global = {
     minimumBurnAmount: 0,
     increaseBurnAmount: 0,
     countdownPeriod: 0,
-    // countdownTimer: 3600,
     prizeAmount: 0,
     burnAddress: '',
     tokenAddress: '',
@@ -255,7 +224,6 @@ const global = {
     decimals: 0,
     channel_id: 0,
     channel_id_2: 0,
-    // chainid: CHAIN_BSC,
     setting_state: SETTING_STATE_IDLE,
     running_state: RUNNING_STATE_STOP
 }
@@ -263,7 +231,6 @@ const global = {
 const getWelcomeMessage = () => {
     let message = `<b>Welcome to LastBurnCompetitionBot! \n\nHow it works: \n\n</b>`
     message += `/help - help\n`
-    // message += `/start - start bot\n`
     message += `/startcompetition - start competition\n`
     message += `/endcompetition - end competition\n`
     message += `/set_minimum_burn_amount - set minimum burn amount\n`
@@ -290,35 +257,21 @@ const getUnknownMessage = () => {
 const getNonAdminMessage = (session) => {
     const msg = `You have not admin role.\n`
     return msg;
-    // let msg = `You have not admin role. \n\n If you want to get admin role, please contact <a href="https://t.me/CryptoSnowPrince">CryptoSnowPrince</a>`
-    // if (session.type !== 'private') {
-    //     // return `${msg} with your chait id! \n Your chatid is ${session.chatid}.`
-    //     return `${msg}!`;
-    // } else {
-    //     return `${msg} with your chait id! \n Your chatid is ${session.chatid}.`
-    // }
 }
 
 bot.on('message', async (message) => {
     try {
-        // console.log('message')
-        // console.log(message)
-        console.log(message.chat.id)
-        console.log(message.text)
-        // const sessionId = getSessionId(message)
         const session = initSession(message)
 
         if (global.setting_state === SETTING_STATE_IDLE) {
             if (!message.entities) {
                 await bot.sendMessage(session.chatid, getUnknownMessage(), sendMessageOption)
-                // await bot.sendMessage(session.chatid, getWelcomeMessage(), sendMessageOption)
                 return;
             }
 
             const commandEntity = message.entities.find(entity => entity.type === 'bot_command');
             if (!commandEntity) {
                 await bot.sendMessage(session.chatid, getUnknownMessage(), sendMessageOption)
-                // await bot.sendMessage(session.chatid, getWelcomeMessage(), sendMessageOption)
                 return;
             }
 
@@ -361,10 +314,6 @@ bot.on('message', async (message) => {
                 global.setting_state = SETTING_STATE_WAIT_COUNTDOWN_PERIOD;
                 await bot.sendMessage(session.chatid, 'Please enter countdown timer in hour!', sendMessageOption)
                 return
-                // } else if (command === BOT_COMMAND_SET_COUNTDOWN_TIMER) {
-                //     global.setting_state = SETTING_STATE_WAIT_COUNTDOWN_TIMER;
-                //     await bot.sendMessage(session.chatid, 'Please enter countdown timer!', sendMessageOption)
-                //     return
             } else if (command === BOT_COMMAND_SET_PRIZE_AMOUNT) {
                 global.setting_state = SETTING_STATE_WAIT_PRIZE_AMOUNT;
                 await bot.sendMessage(session.chatid, 'Please enter prize amount', sendMessageOption)
@@ -397,13 +346,8 @@ bot.on('message', async (message) => {
                 global.setting_state = SETTING_STATE_WAIT_CHANNEL_2;
                 await bot.sendMessage(session.chatid, 'Please enter channel 2', sendMessageOption)
                 return
-                // } else if (command === BOT_COMMAND_SET_ADMIN) {
-                //     global.setting_state = SETTING_STATE_WAIT_ADMIN;
-                //     await bot.sendMessage(session.chatid, 'Please enter chat id to add admin', sendMessageOption)
-                //     return
             } else {
                 await bot.sendMessage(session.chatid, getUnknownMessage(), sendMessageOption)
-                // await bot.sendMessage(session.chatid, getWelcomeMessage(), sendMessageOption)
                 return;
             }
         } else if (global.setting_state === SETTING_STATE_WAIT_MINIMUM_BURN_AMOUNT) {
@@ -436,16 +380,6 @@ bot.on('message', async (message) => {
             } else {
                 await bot.sendMessage(session.chatid, `😢 Sorry, Invalid Value, Please enter the valid value.`, sendMessageOption)
             }
-            // } else if (global.setting_state === SETTING_STATE_WAIT_COUNTDOWN_TIMER) {
-            //     global.setting_state = SETTING_STATE_IDLE
-            //     if (!session.admin) {
-            //         await bot.sendMessage(session.chatid, getNonAdminMessage(session), sendMessageOption)
-            //     } else if (message.text && parseInt(message.text)) {
-            //         global.countdownTimer = parseInt(message.text)
-            //         await bot.sendMessage(session.chatid, `✅ Successfully updated the countdown period!`, sendMessageOption)
-            //     } else {
-            //         await bot.sendMessage(session.chatid, `😢 Sorry, Invalid Value, Please enter the valid value.`, sendMessageOption)
-            //     }
         } else if (global.setting_state === SETTING_STATE_WAIT_PRIZE_AMOUNT) {
             global.setting_state = SETTING_STATE_IDLE
             if (!session.admin) {
@@ -549,21 +483,6 @@ bot.on('message', async (message) => {
                 await bot.sendMessage(session.chatid, `😢 Sorry, Invalid channel, Please enter the valid channel id.`, sendMessageOption)
             }
             global.setting_state = SETTING_STATE_IDLE
-            // } else if (global.setting_state === SETTING_STATE_WAIT_ADMIN) {
-            //     if (!session.admin) {
-            //         await bot.sendMessage(session.chatid, getNonAdminMessage(session), sendMessageOption)
-            //     } else if (message.text && Number(message.text)) {
-            //         const bSuccess = addAdmin(Number(message.text))
-            //         if (bSuccess) {
-            //             global.new_admin_id = Number(message.text)
-            //             await bot.sendMessage(session.chatid, `✅ Successfully added new admin!`, sendMessageOption)
-            //         } else {
-            //             await bot.sendMessage(session.chatid, `😢 Error to add new admin! \nPlease ask requester about chatid again.`, sendMessageOption)
-            //         }
-            //     } else {
-            //         await bot.sendMessage(session.chatid, `😢 Sorry, Invalid admin id, Please enter the valid admin id.`, sendMessageOption)
-            //     }
-            //     global.setting_state = SETTING_STATE_IDLE
         } else if (!session.admin) {
             await bot.sendMessage(session.chatid, getNonAdminMessage(session), sendMessageOption)
             return;
@@ -626,8 +545,6 @@ const isValidCompetition = async () => {
         return ERROR_INCREASE_BURN_AMOUNT;
     } else if (!Number(global.countdownPeriod)) {
         return ERROR_COUNTDOWN_PERIOD
-        // } else if (!Number(global.countdownTimer)) {
-        //     return ERROR_COUNTDOWN_TIMER
     } else if (!Number(global.prizeAmount)) {
         return ERROR_PRIZE_AMOUNT
     } else if (!web3Validator.isAddress(global.burnAddress)) {
@@ -640,8 +557,6 @@ const isValidCompetition = async () => {
         return ERROR_TOKEN_BURN_CHANNEL
     } else if (!global.videoFile) {
         return ERROR_VIDEO_FILE
-        // } else if (!global.chainid.chainID) {
-        //     return ERROR_CHAIN_ID
     } else if (!global.channel_id) {
         return ERROR_CHANNEL_ID
     } else if (!global.channel_id_2) {
@@ -661,7 +576,6 @@ const gCompInfo = {
     minBurn: global.minimumBurnAmount,
     curMinBurn: global.minimumBurnAmount,
     curCntDownPeriod: global.countdownPeriod * 3600,
-    // curCntDownTimer: global.countdownTimer,
     prizeAmount: global.prizeAmount,
     incBurn: global.increaseBurnAmount,
 
@@ -674,7 +588,6 @@ const gCompInfo = {
     decimals: global.decimals,
     channel_id: global.channel_id,
     channel_id_2: global.channel_id_2,
-    // chainid: global.chainid,
 
     curCntDown: 0,
     totalBurn: 0,
@@ -730,7 +643,6 @@ const startCompetition = async () => {
             gCompInfo.minBurn = global.minimumBurnAmount;
             gCompInfo.curMinBurn = global.minimumBurnAmount;
             gCompInfo.curCntDownPeriod = global.countdownPeriod * 3600;
-            // gCompInfo.curCntDownTimer = global.countdownTimer * 1000;
             gCompInfo.prizeAmount = global.prizeAmount;
             gCompInfo.incBurn = global.increaseBurnAmount;
 
@@ -743,7 +655,6 @@ const startCompetition = async () => {
             gCompInfo.decimals = global.decimals;
             gCompInfo.channel_id = global.channel_id;
             gCompInfo.channel_id_2 = global.channel_id_2;
-            // gCompInfo.chainid = global.chainid
 
             gCompInfo.curCntDown = Math.floor(Date.now() / 1000) + gCompInfo.curCntDownPeriod;
             gCompInfo.totalBurn = 0;
@@ -910,15 +821,15 @@ async function burnMonitor() {
         const contract = new web3.eth.Contract(CONTRACT_ABI, gCompInfo.tokenAddress);
         if (latestBN >= startBN) {
             try {
-                console.log('fromBlock: ', startBN)
-                console.log('toBlock: ', latestBN)
+                // console.log('fromBlock: ', startBN)
+                // console.log('toBlock: ', latestBN)
                 const eventLists = await contract.getPastEvents("Transfer", { fromBlock: startBN, toBlock: latestBN });
                 if (eventLists.length > 0) {
                     for (let idx = 0; idx < eventLists.length; idx++) {
                         const item = eventLists[idx].returnValues
                         if (item.to.toLowerCase() === gCompInfo.burnAddress.toLowerCase()) {
                             const burnAmount = formatUnits(item.value, gCompInfo.decimals)
-                            console.log('burnAmount: ', burnAmount)
+                            // console.log('burnAmount: ', burnAmount)
                             gCompInfo.totalBurn += burnAmount;
                             if (burnAmount >= gCompInfo.curMinBurn) {
                                 gCompInfo.curMinBurn = gCompInfo.minBurn
@@ -1030,15 +941,6 @@ const getBotInfo = () => {
         channel_id_2: global.channel_id_2 ? global.channel_id_2 : 'not set',
     }
     message += `<code>${JSON.stringify(botInfo, null, 2)}</code>\n\n`
-    // message += `Bot Competition Info\n\n`
-    // message += `<code>${JSON.stringify(gCompInfo, null, 2)}</code>\n\n`
-    // message += `Bot Airdrop Info\n\n`
-    // message += `<code>${JSON.stringify(gCompInfo.airdrop, null, 2)}</code>\n\n`
-    // message += `Bot Monitor Info\n\n`
-    // message += `${latestBN}\n`
-    // message += `${startBN}\n`
-    // message += `${burnMonitorId}\n`
-    // message += `${burnIncMonitorId}\n\n`
     message += `\n<a href="https://t.me/CryptoSnowPrince"><b>Metabestech</b></a>`
     return message;
 }
