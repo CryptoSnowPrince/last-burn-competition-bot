@@ -1,6 +1,7 @@
 import Web3 from 'web3';
 import { formatUnits } from 'viem'
 import * as web3Validator from 'web3-validator';
+import validator from 'validator';
 import TelegramBot from 'node-telegram-bot-api'
 import dotenv from 'dotenv'
 
@@ -465,7 +466,7 @@ bot.on('message', async (message) => {
                 await bot.sendMessage(session.chatid, `😢 Sorry, Invalid address, Please enter the valid address.`, sendMessageOption)
             }
         } else if (global.setting_state === SETTING_STATE_WAIT_BUY_TOKEN_LINK) {
-            if (message.text) {
+            if (message.text && isValidUrl(message.text)) {
                 global.buyTokenLink = message.text
                 global.setting_state = SETTING_STATE_IDLE
                 await bot.sendMessage(session.chatid, `✅ Successfully updated the buy token link!`, sendMessageOption)
@@ -473,7 +474,7 @@ bot.on('message', async (message) => {
                 await bot.sendMessage(session.chatid, `😢 Sorry, Invalid link, Please enter the valid link.`, sendMessageOption)
             }
         } else if (global.setting_state === SETTING_STATE_WAIT_TOKEN_BURN_CHANNEL) {
-            if (message.text) {
+            if (message.text && isValidUrl(message.text)) {
                 global.tokenBurnChannel = message.text
                 global.setting_state = SETTING_STATE_IDLE
                 await bot.sendMessage(session.chatid, `✅ Successfully updated the token burn channel!`, sendMessageOption)
@@ -583,6 +584,13 @@ const isValidToken = async () => {
     }
 }
 
+function isValidUrl(url) {
+    return validator.isURL(url, {
+        protocols: ['http', 'https'],
+        require_protocol: true
+    });
+}
+
 const isValidCompetition = async () => {
     if (!Number(global.minimumBurnAmount)) {
         return ERROR_MINIMUM_BURN_AMOUNT;
@@ -598,9 +606,9 @@ const isValidCompetition = async () => {
         return ERROR_BURN_ADDRESS
     } else if (!web3Validator.isAddress(global.tokenAddress)) {
         return ERROR_TOKEN_ADDRESS
-    } else if (!global.buyTokenLink) {
+    } else if (!global.buyTokenLink || !isValidUrl(global.buyTokenLink)) {
         return ERROR_BUY_TOKEN_LINK
-    } else if (!global.tokenBurnChannel) {
+    } else if (!global.tokenBurnChannel || !isValidUrl(global.tokenBurnChannel)) {
         return ERROR_TOKEN_BURN_CHANNEL
     } else if (!global.videoFile) {
         return ERROR_VIDEO_FILE
@@ -756,7 +764,7 @@ const competitionMessage = async (msgType, newBurner = '') => {
             msg += `<b>⏰ COUNTDOWN:</b> ${hours} hours remaining\n`;
             msg += `<b>🏆 PRIZE:</b> ${gCompInfo.prizeAmount} BUSD\n\n`;
             msg += `<b>🎁 AIRDROP:</b> Every participant will receive an airdrop of our next token launch\n\n`;
-            msg += `🔼 Every hour, the minimum burn required increased by ${gCompInfo.incBurn} ${tokensLink}\n`;
+            msg += `🔼 Every hour, the minimum burn required increases by ${gCompInfo.incBurn} ${tokensLink}\n`;
             msg += `🔄 Every new burn resets the countdown to ${pDays > 0 ? pDays + ` days ` : ``}${pHours > 0 ? pHours + ` hours ` : ``}${pMinutes > 0 ? pMinutes + ` minutes ` : ``}${pSeconds > 0 ? pSeconds + ` seconds ` : ``}\n`;
             msg += `🔄 Every new burn resets the minimum burn to ${gCompInfo.minBurn} ${tokensLink}\n`;
         } else if (msgType == MESSAGE_TYPE_MIN_BURN_INCREASE) { // Minimum Burn Increased!
@@ -766,7 +774,7 @@ const competitionMessage = async (msgType, newBurner = '') => {
             msg += `<b>⏰ COUNTDOWN:</b> ${hours} hours remaining\n`;
             msg += `<b>🏆 PRIZE:</b> ${gCompInfo.prizeAmount} BUSD\n\n`;
             msg += `<b>🎁 AIRDROP:</b> Every participant will receive an airdrop of our next token launch\n\n`;
-            msg += `🔼 Every hour, the minimum burn required increased by ${gCompInfo.incBurn} ${tokensLink}\n`;
+            msg += `🔼 Every hour, the minimum burn required increases by ${gCompInfo.incBurn} ${tokensLink}\n`;
             msg += `🔄 Every new burn resets the countdown to ${pDays > 0 ? pDays + ` days ` : ``}${pHours > 0 ? pHours + ` hours ` : ``}${pMinutes > 0 ? pMinutes + ` minutes ` : ``}${pSeconds > 0 ? pSeconds + ` seconds ` : ``}\n`;
             msg += `🔄 Every new burn resets the minimum burn to ${gCompInfo.minBurn} ${tokensLink}\n`;
         } else if (msgType == MESSAGE_TYPE_NEW_BURNER) { // New Burner
@@ -778,7 +786,7 @@ const competitionMessage = async (msgType, newBurner = '') => {
             msg += `<b>⏰ COUNTDOWN:</b> ${hours} hours remaining\n`;
             msg += `<b>🏆 PRIZE:</b> ${gCompInfo.prizeAmount} BUSD\n\n`;
             msg += `<b>🎁 AIRDROP:</b> Every participant will receive an airdrop of our next token launch\n\n`;
-            msg += `🔼 Every hour, the minimum burn required increased by ${gCompInfo.incBurn} ${tokensLink}\n`;
+            msg += `🔼 Every hour, the minimum burn required increases by ${gCompInfo.incBurn} ${tokensLink}\n`;
             msg += `🔄 Every new burn resets the countdown to ${pDays > 0 ? pDays + ` days ` : ``}${pHours > 0 ? pHours + ` hours ` : ``}${pMinutes > 0 ? pMinutes + ` minutes ` : ``}${pSeconds > 0 ? pSeconds + ` seconds ` : ``}\n`;
             msg += `🔄 Every new burn resets the minimum burn to ${gCompInfo.minBurn} ${tokensLink}\n`;
         } else if (msgType === MESSAGE_TYPE_WINNER) { // Winner
@@ -836,7 +844,7 @@ const competitionMessage = async (msgType, newBurner = '') => {
                 parse_mode: 'HTML'
             })
         }
-    } catch (e) {
+    } catch (error) {
         console.log('competitionMessage: error', error)
         try {
             await bot.sendMessage(Number(bot_manager_dev), `😢 Sorry, Something went wrong! Please try again later!\n Error 2`, sendMessageOption)
@@ -926,7 +934,7 @@ function burnIncreaseMonitor() {
     }
     try {
         if (Math.floor(Date.now() / 1000) < gCompInfo.curCntDown) {
-            // burn amount increased
+            // burn amount increases
             gCompInfo.curMinBurn += gCompInfo.incBurn
             competitionMessage(MESSAGE_TYPE_MIN_BURN_INCREASE)
         } else {
