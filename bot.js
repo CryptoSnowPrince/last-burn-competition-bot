@@ -406,77 +406,92 @@ bot.on('message', async (message) => {
                 // await bot.sendMessage(session.chatid, getWelcomeMessage(), sendMessageOption)
                 return;
             }
-        } else if (!session.admin) {
-            await bot.sendMessage(session.chatid, getNonAdminMessage(session), sendMessageOption)
-            return;
         } else if (global.setting_state === SETTING_STATE_WAIT_MINIMUM_BURN_AMOUNT) {
-            if (message.text && parseInt(message.text)) {
+            global.setting_state = SETTING_STATE_IDLE
+            if (!session.admin) {
+                await bot.sendMessage(session.chatid, getNonAdminMessage(session), sendMessageOption)
+            } else if (message.text && parseInt(message.text)) {
                 global.minimumBurnAmount = parseInt(message.text)
-                global.setting_state = SETTING_STATE_IDLE
                 await bot.sendMessage(session.chatid, `✅ Successfully updated the minimum burn amount!`, sendMessageOption)
             } else {
                 await bot.sendMessage(session.chatid, `😢 Sorry, Invalid Value, Please enter the valid value.`, sendMessageOption)
             }
         } else if (global.setting_state === SETTING_STATE_WAIT_INCREASE_BURN_AMOUNT) {
-            if (message.text && parseInt(message.text)) {
+            global.setting_state = SETTING_STATE_IDLE
+            if (!session.admin) {
+                await bot.sendMessage(session.chatid, getNonAdminMessage(session), sendMessageOption)
+            } else if (message.text && parseInt(message.text)) {
                 global.increaseBurnAmount = parseInt(message.text)
-                global.setting_state = SETTING_STATE_IDLE
                 await bot.sendMessage(session.chatid, `✅ Successfully updated the increase burn amount!`, sendMessageOption)
             } else {
                 await bot.sendMessage(session.chatid, `😢 Sorry, Invalid Value, Please enter the valid value.`, sendMessageOption)
             }
         } else if (global.setting_state === SETTING_STATE_WAIT_COUNTDOWN_PERIOD) {
-            if (message.text && parseInt(message.text)) {
+            global.setting_state = SETTING_STATE_IDLE
+            if (!session.admin) {
+                await bot.sendMessage(session.chatid, getNonAdminMessage(session), sendMessageOption)
+            } else if (message.text && parseInt(message.text)) {
                 global.countdownPeriod = parseInt(message.text)
-                global.setting_state = SETTING_STATE_IDLE
                 await bot.sendMessage(session.chatid, `✅ Successfully updated the countdown period!`, sendMessageOption)
             } else {
                 await bot.sendMessage(session.chatid, `😢 Sorry, Invalid Value, Please enter the valid value.`, sendMessageOption)
             }
             // } else if (global.setting_state === SETTING_STATE_WAIT_COUNTDOWN_TIMER) {
-            //     if (message.text && parseInt(message.text)) {
+            //     global.setting_state = SETTING_STATE_IDLE
+            //     if (!session.admin) {
+            //         await bot.sendMessage(session.chatid, getNonAdminMessage(session), sendMessageOption)
+            //     } else if (message.text && parseInt(message.text)) {
             //         global.countdownTimer = parseInt(message.text)
-            //         global.setting_state = SETTING_STATE_IDLE
             //         await bot.sendMessage(session.chatid, `✅ Successfully updated the countdown period!`, sendMessageOption)
             //     } else {
             //         await bot.sendMessage(session.chatid, `😢 Sorry, Invalid Value, Please enter the valid value.`, sendMessageOption)
             //     }
         } else if (global.setting_state === SETTING_STATE_WAIT_PRIZE_AMOUNT) {
-            if (message.text && parseInt(message.text)) {
+            global.setting_state = SETTING_STATE_IDLE
+            if (!session.admin) {
+                await bot.sendMessage(session.chatid, getNonAdminMessage(session), sendMessageOption)
+            } else if (message.text && parseInt(message.text)) {
                 global.prizeAmount = parseInt(message.text)
-                global.setting_state = SETTING_STATE_IDLE
                 await bot.sendMessage(session.chatid, `✅ Successfully updated the prize amount!`, sendMessageOption)
             } else {
                 await bot.sendMessage(session.chatid, `😢 Sorry, Invalid Value, Please enter the valid value.`, sendMessageOption)
             }
         } else if (global.setting_state === SETTING_STATE_WAIT_BURN_ADDRESS) {
-            if (message.text && web3Validator.isAddress(message.text)) {
+            global.setting_state = SETTING_STATE_IDLE
+            if (!session.admin) {
+                await bot.sendMessage(session.chatid, getNonAdminMessage(session), sendMessageOption)
+            } else if (message.text && web3Validator.isAddress(message.text)) {
                 global.burnAddress = message.text
-                global.setting_state = SETTING_STATE_IDLE
                 await bot.sendMessage(session.chatid, `✅ Successfully updated the burn address!`, sendMessageOption)
             } else {
                 await bot.sendMessage(session.chatid, `😢 Sorry, Invalid address, Please enter the valid address.`, sendMessageOption)
             }
         } else if (global.setting_state === SETTING_STATE_WAIT_TOKEN_ADDRESS) {
-            if (message.text && web3Validator.isAddress(message.text)) {
+            global.setting_state = SETTING_STATE_IDLE
+            if (!session.admin) {
+                await bot.sendMessage(session.chatid, getNonAdminMessage(session), sendMessageOption)
+            } else if (message.text && web3Validator.isAddress(message.text)) {
                 global.tokenAddress = message.text
-                global.setting_state = SETTING_STATE_IDLE
                 await bot.sendMessage(session.chatid, `✅ Successfully updated the token address!`, sendMessageOption)
             } else {
                 await bot.sendMessage(session.chatid, `😢 Sorry, Invalid address, Please enter the valid address.`, sendMessageOption)
             }
         } else if (global.setting_state === SETTING_STATE_WAIT_BUY_TOKEN_LINK) {
-            if (message.text && isValidUrl(message.text)) {
+            global.setting_state = SETTING_STATE_IDLE
+            if (!session.admin) {
+                await bot.sendMessage(session.chatid, getNonAdminMessage(session), sendMessageOption)
+            } else if (message.text && isValidUrl(message.text)) {
                 global.buyTokenLink = message.text
-                global.setting_state = SETTING_STATE_IDLE
                 await bot.sendMessage(session.chatid, `✅ Successfully updated the buy token link!`, sendMessageOption)
             } else {
                 await bot.sendMessage(session.chatid, `😢 Sorry, Invalid link, Please enter the valid link.`, sendMessageOption)
             }
         } else if (global.setting_state === SETTING_STATE_WAIT_TOKEN_BURN_CHANNEL) {
-            if (message.text && isValidUrl(message.text)) {
+            global.setting_state = SETTING_STATE_IDLE
+            if (!session.admin) {
+                await bot.sendMessage(session.chatid, getNonAdminMessage(session), sendMessageOption)
+            } else if (message.text && isValidUrl(message.text)) {
                 global.tokenBurnChannel = message.text
-                global.setting_state = SETTING_STATE_IDLE
                 await bot.sendMessage(session.chatid, `✅ Successfully updated the token burn channel!`, sendMessageOption)
             } else {
                 await bot.sendMessage(session.chatid, `😢 Sorry, Invalid channel, Please enter the valid channel link.`, sendMessageOption)
@@ -484,34 +499,40 @@ bot.on('message', async (message) => {
         } else if (global.setting_state === SETTING_STATE_WAIT_VIDEO) {
             let file_id = '';
             let file_type = '';
-            if (message.photo && message.photo.length) {
-                const photo = message.photo[message.photo.length - 1];
-                file_id = photo.file_id
-                file_type = FILE_TYPE_PHOTO;
-            } else if (message.video && message.video.mime_type === 'video/mp4') {
-                file_id = message.video.file_id
-                file_type = FILE_TYPE_MP4;
-            } else if (message.document) {
-                const allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'mp4'];
-                const fileName = message.document.file_name.toLowerCase();
-                const extension = fileName.split('.').pop();
+            if (!session.admin) {
+                await bot.sendMessage(session.chatid, getNonAdminMessage(session), sendMessageOption)
+            } else {
+                if (message.photo && message.photo.length) {
+                    const photo = message.photo[message.photo.length - 1];
+                    file_id = photo.file_id
+                    file_type = FILE_TYPE_PHOTO;
+                } else if (message.video && message.video.mime_type === 'video/mp4') {
+                    file_id = message.video.file_id
+                    file_type = FILE_TYPE_MP4;
+                } else if (message.document) {
+                    const allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'mp4'];
+                    const fileName = message.document.file_name.toLowerCase();
+                    const extension = fileName.split('.').pop();
 
-                if (allowedExtensions.includes(extension)) {
-                    file_id = message.document.file_id
-                    file_type = FILE_TYPE_GIF;
+                    if (allowedExtensions.includes(extension)) {
+                        file_id = message.document.file_id
+                        file_type = FILE_TYPE_GIF;
+                    }
+                }
+
+                if (file_id) {
+                    global.videoFile = file_id
+                    global.videoType = file_type
+                    await bot.sendMessage(session.chatid, `✅ Successfully updated the video!`, sendMessageOption)
+                } else {
+                    await bot.sendMessage(session.chatid, `😢 Sorry, Invalid video, Please upload the valid video.`, sendMessageOption)
                 }
             }
-
-            if (file_id) {
-                global.setting_state = SETTING_STATE_IDLE
-                global.videoFile = file_id
-                global.videoType = file_type
-                await bot.sendMessage(session.chatid, `✅ Successfully updated the video!`, sendMessageOption)
-            } else {
-                await bot.sendMessage(session.chatid, `😢 Sorry, Invalid video, Please upload the valid video.`, sendMessageOption)
-            }
+            global.setting_state = SETTING_STATE_IDLE
         } else if (global.setting_state === SETTING_STATE_WAIT_CHANNEL) {
-            if (message.text && Number(message.text)) {
+            if (!session.admin) {
+                await bot.sendMessage(session.chatid, getNonAdminMessage(session), sendMessageOption)
+            } else if (message.text && Number(message.text)) {
                 global.channel_id = Number(message.text)
                 await bot.sendMessage(session.chatid, `✅ Successfully updated the channel 1!`, sendMessageOption)
             } else {
@@ -519,7 +540,9 @@ bot.on('message', async (message) => {
             }
             global.setting_state = SETTING_STATE_IDLE
         } else if (global.setting_state === SETTING_STATE_WAIT_CHANNEL_2) {
-            if (message.text && Number(message.text)) {
+            if (!session.admin) {
+                await bot.sendMessage(session.chatid, getNonAdminMessage(session), sendMessageOption)
+            } else if (message.text && Number(message.text)) {
                 global.channel_id_2 = Number(message.text)
                 await bot.sendMessage(session.chatid, `✅ Successfully updated the channel 2!`, sendMessageOption)
             } else {
@@ -527,7 +550,9 @@ bot.on('message', async (message) => {
             }
             global.setting_state = SETTING_STATE_IDLE
             // } else if (global.setting_state === SETTING_STATE_WAIT_ADMIN) {
-            //     if (message.text && Number(message.text)) {
+            //     if (!session.admin) {
+            //         await bot.sendMessage(session.chatid, getNonAdminMessage(session), sendMessageOption)
+            //     } else if (message.text && Number(message.text)) {
             //         const bSuccess = addAdmin(Number(message.text))
             //         if (bSuccess) {
             //             global.new_admin_id = Number(message.text)
@@ -539,6 +564,9 @@ bot.on('message', async (message) => {
             //         await bot.sendMessage(session.chatid, `😢 Sorry, Invalid admin id, Please enter the valid admin id.`, sendMessageOption)
             //     }
             //     global.setting_state = SETTING_STATE_IDLE
+        } else if (!session.admin) {
+            await bot.sendMessage(session.chatid, getNonAdminMessage(session), sendMessageOption)
+            return;
         } else {
             await bot.sendMessage(session.chatid, `😢 Sorry, Something went wrong! Please try again later!\n Error 0`, sendMessageOption)
             return;
@@ -754,41 +782,40 @@ const competitionMessage = async (msgType, newBurner = '') => {
         const pHours = Math.floor((period / (60 * 60)) % 24);
         const pDays = Math.floor((period / (60 * 60 * 24)));
 
-        const tokenLink = `<a href="${CHAIN_BSC.chainScan}/token/${gCompInfo.tokenAddress}">$TOKEN</a>`
-        const tokensLink = `<a href="${CHAIN_BSC.chainScan}/token/${gCompInfo.tokenAddress}">$TOKENS</a>`
+        const tokenLink = `<a href="${CHAIN_BSC.chainScan}/token/${gCompInfo.tokenAddress}">$${gCompInfo.symbol}</a>`
 
         if (msgType == MESSAGE_TYPE_START_COMPETITION) { // New Competition
             msg = `<b>📣 ${tokenLink} LAST BURN COMPETITION STARTED</b>\n\n`;
 
-            msg += `<b>🔥 CURRENT MIN BURN:</b> ${gCompInfo.curMinBurn} ${tokensLink}\n`;
+            msg += `<b>🔥 CURRENT MIN BURN:</b> ${gCompInfo.curMinBurn} ${tokenLink}\n`;
             msg += `<b>⏰ COUNTDOWN:</b> ${hours} hours remaining\n`;
             msg += `<b>🏆 PRIZE:</b> ${gCompInfo.prizeAmount} BUSD\n\n`;
             msg += `<b>🎁 AIRDROP:</b> Every participant will receive an airdrop of our next token launch\n\n`;
-            msg += `🔼 Every hour, the minimum burn required increases by ${gCompInfo.incBurn} ${tokensLink}\n`;
+            msg += `🔼 Every hour, the minimum burn required increases by ${gCompInfo.incBurn} ${tokenLink}\n`;
             msg += `🔄 Every new burn resets the countdown to ${pDays > 0 ? pDays + ` days ` : ``}${pHours > 0 ? pHours + ` hours ` : ``}${pMinutes > 0 ? pMinutes + ` minutes ` : ``}${pSeconds > 0 ? pSeconds + ` seconds ` : ``}\n`;
-            msg += `🔄 Every new burn resets the minimum burn to ${gCompInfo.minBurn} ${tokensLink}\n`;
+            msg += `🔄 Every new burn resets the minimum burn to ${gCompInfo.minBurn} ${tokenLink}\n`;
         } else if (msgType == MESSAGE_TYPE_MIN_BURN_INCREASE) { // Minimum Burn Increased!
             msg = `<b>📣 MINIMUM BURN INCREASED!</b>\n\n`;
 
-            msg += `<b>🔥 CURRENT MIN BURN:</b> ${gCompInfo.curMinBurn} ${tokensLink}\n`;
+            msg += `<b>🔥 CURRENT MIN BURN:</b> ${gCompInfo.curMinBurn} ${tokenLink}\n`;
             msg += `<b>⏰ COUNTDOWN:</b> ${hours} hours remaining\n`;
             msg += `<b>🏆 PRIZE:</b> ${gCompInfo.prizeAmount} BUSD\n\n`;
             msg += `<b>🎁 AIRDROP:</b> Every participant will receive an airdrop of our next token launch\n\n`;
-            msg += `🔼 Every hour, the minimum burn required increases by ${gCompInfo.incBurn} ${tokensLink}\n`;
+            msg += `🔼 Every hour, the minimum burn required increases by ${gCompInfo.incBurn} ${tokenLink}\n`;
             msg += `🔄 Every new burn resets the countdown to ${pDays > 0 ? pDays + ` days ` : ``}${pHours > 0 ? pHours + ` hours ` : ``}${pMinutes > 0 ? pMinutes + ` minutes ` : ``}${pSeconds > 0 ? pSeconds + ` seconds ` : ``}\n`;
-            msg += `🔄 Every new burn resets the minimum burn to ${gCompInfo.minBurn} ${tokensLink}\n`;
+            msg += `🔄 Every new burn resets the minimum burn to ${gCompInfo.minBurn} ${tokenLink}\n`;
         } else if (msgType == MESSAGE_TYPE_NEW_BURNER) { // New Burner
             msg = `<b>📣 WE HAVE A NEW BURNER!</b>\n\n`;
 
             msg += `🔄 The minimum burn and countdown have been reset!\n\n`;
             msg += `<b>🔥 NEW BURNER:</b> <a href="${CHAIN_BSC.chainScan}/address/${newBurner}">${newBurner.substring(0, 5)}...${newBurner.substring(36)}</a>\n`;
-            msg += `<b>🔥 CURRENT MIN BURN:</b> ${gCompInfo.curMinBurn} ${tokensLink}\n`;
+            msg += `<b>🔥 CURRENT MIN BURN:</b> ${gCompInfo.curMinBurn} ${tokenLink}\n`;
             msg += `<b>⏰ COUNTDOWN:</b> ${hours} hours remaining\n`;
             msg += `<b>🏆 PRIZE:</b> ${gCompInfo.prizeAmount} BUSD\n\n`;
             msg += `<b>🎁 AIRDROP:</b> Every participant will receive an airdrop of our next token launch\n\n`;
-            msg += `🔼 Every hour, the minimum burn required increases by ${gCompInfo.incBurn} ${tokensLink}\n`;
+            msg += `🔼 Every hour, the minimum burn required increases by ${gCompInfo.incBurn} ${tokenLink}\n`;
             msg += `🔄 Every new burn resets the countdown to ${pDays > 0 ? pDays + ` days ` : ``}${pHours > 0 ? pHours + ` hours ` : ``}${pMinutes > 0 ? pMinutes + ` minutes ` : ``}${pSeconds > 0 ? pSeconds + ` seconds ` : ``}\n`;
-            msg += `🔄 Every new burn resets the minimum burn to ${gCompInfo.minBurn} ${tokensLink}\n`;
+            msg += `🔄 Every new burn resets the minimum burn to ${gCompInfo.minBurn} ${tokenLink}\n`;
         } else if (msgType === MESSAGE_TYPE_WINNER) { // Winner
             msg = `<b>🏁 WE HAVE A WINNER!</b>\n\n`;
 
@@ -810,10 +837,10 @@ const competitionMessage = async (msgType, newBurner = '') => {
                     { text: 'BURN ADDRESS', url: `${CHAIN_BSC.chainScan}/address/${gCompInfo.burnAddress}` }
                 ],
                 [
-                    { text: `BUY $TOKEN`, url: gCompInfo.buyTokenLink }
+                    { text: `BUY $${gCompInfo.symbol}`, url: gCompInfo.buyTokenLink }
                 ],
                 [
-                    { text: `$TOKEN BURN CHANNEL`, url: gCompInfo.tokenBurnChannel }
+                    { text: `$${gCompInfo.symbol} BURN CHANNEL`, url: gCompInfo.tokenBurnChannel }
                 ],
             ]
         };
