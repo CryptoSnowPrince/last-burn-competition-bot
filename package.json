@@ -5,7 +5,7 @@
   "license": "MIT",
   "scripts": {
     "start": "nodemon bot.js",
-    "start-bot": "npx pm2 start bot.js --name latest-burn-competition-bot --time",
+    "start-bot": "npx pm2 start bot.js",
     "stop-bot": "npx pm2 stop bot.js"
   },
   "dependencies": {
