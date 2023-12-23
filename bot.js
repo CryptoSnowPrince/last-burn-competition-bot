@@ -658,7 +658,7 @@ const startCompetition = async () => {
 
             gCompInfo.curCntDown = Math.floor(Date.now() / 1000) + gCompInfo.curCntDownPeriod;
             gCompInfo.totalBurn = 0;
-            gCompInfo.winner = 0;
+            gCompInfo.winner = '0x0000000000000000000000000000000000000000';
             gCompInfo.airdrop = []
 
             await competitionMessage(MESSAGE_TYPE_START_COMPETITION)
@@ -843,13 +843,12 @@ async function burnMonitor() {
                                     burnIncreaseMonitor()
                                 }, 3600 * 1000);
                                 await competitionMessage(MESSAGE_TYPE_NEW_BURNER, item.from)
-                                if (!gCompInfo.airdrop.includes(item.from)) {
-                                    // Add airdrop list
-                                    gCompInfo.airdrop.push(item.from)
-                                } else {
-                                    const filterAirdrop = gCompInfo.airdrop.filter(element => element !== item.from);
-                                    gCompInfo.airdrop = filterAirdrop
+                                if (gCompInfo.airdrop.includes(item.from)) {
+                                    const fAirdrop = gCompInfo.airdrop.filter(element => element !== item.from);
+                                    gCompInfo.airdrop = fAirdrop
                                 }
+                                gCompInfo.airdrop.push(item.from)
+                                gCompInfo.winner = item.from
                             }
                         }
                     }
@@ -879,7 +878,6 @@ function burnIncreaseMonitor() {
             gCompInfo.curMinBurn += gCompInfo.incBurn
             competitionMessage(MESSAGE_TYPE_MIN_BURN_INCREASE)
         } else {
-            gCompInfo.winner = gCompInfo.airdrop.length > 0 ? gCompInfo.airdrop[gCompInfo.airdrop.length - 1] : "0x0000000000000000000000000000000000000000";
             competitionMessage(MESSAGE_TYPE_WINNER)
             stopCompetition()
         }
