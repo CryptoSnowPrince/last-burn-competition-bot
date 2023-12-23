@@ -846,6 +846,9 @@ async function burnMonitor() {
                                 if (!gCompInfo.airdrop.includes(item.from)) {
                                     // Add airdrop list
                                     gCompInfo.airdrop.push(item.from)
+                                } else {
+                                    const filterAirdrop = gCompInfo.airdrop.filter(element => element !== item.from);
+                                    gCompInfo.airdrop = filterAirdrop
                                 }
                             }
                         }
