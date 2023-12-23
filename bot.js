@@ -828,7 +828,7 @@ async function burnMonitor() {
                     for (let idx = 0; idx < eventLists.length; idx++) {
                         const item = eventLists[idx].returnValues
                         if (item.to.toLowerCase() === gCompInfo.burnAddress.toLowerCase()) {
-                            const burnAmount = formatUnits(item.value, gCompInfo.decimals)
+                            const burnAmount = Number(formatUnits(item.value, gCompInfo.decimals))
                             // console.log('burnAmount: ', burnAmount)
                             gCompInfo.totalBurn += burnAmount;
                             if (burnAmount >= gCompInfo.curMinBurn) {
@@ -843,10 +843,10 @@ async function burnMonitor() {
                                     burnIncreaseMonitor()
                                 }, 3600 * 1000);
                                 await competitionMessage(MESSAGE_TYPE_NEW_BURNER, item.from)
-                            }
-                            if (burnAmount > 0 && !gCompInfo.airdrop.includes(item.from)) {
-                                // Add airdrop list
-                                gCompInfo.airdrop.push(item.from)
+                                if (!gCompInfo.airdrop.includes(item.from)) {
+                                    // Add airdrop list
+                                    gCompInfo.airdrop.push(item.from)
+                                }
                             }
                         }
                     }
