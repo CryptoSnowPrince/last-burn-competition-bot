@@ -591,7 +591,7 @@ const gCompInfo = {
 
     curCntDown: 0,
     totalBurn: 0,
-    winner: 0,
+    winner: '0x0000000000000000000000000000000000000000',
     airdrop: [],
 }
 
