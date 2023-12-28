@@ -250,9 +250,9 @@ const getWelcomeMessage = () => {
     return message;
 }
 
-const getUnknownMessage = () => {
-    return `Unknown Command!`;
-}
+// const getUnknownMessage = () => {
+//     return `Unknown Command!`;
+// }
 
 // const getNonAdminMessage = (session) => {
 //     const msg = `You have not admin role.\n`
@@ -265,13 +265,13 @@ bot.on('message', async (message) => {
 
         if (global.setting_state === SETTING_STATE_IDLE) {
             if (!message.entities) {
-                await bot.sendMessage(session.chatid, getUnknownMessage(), sendMessageOption)
+                // await bot.sendMessage(session.chatid, getUnknownMessage(), sendMessageOption)
                 return;
             }
 
             const commandEntity = message.entities.find(entity => entity.type === 'bot_command');
             if (!commandEntity) {
-                await bot.sendMessage(session.chatid, getUnknownMessage(), sendMessageOption)
+                // await bot.sendMessage(session.chatid, getUnknownMessage(), sendMessageOption)
                 return;
             }
 
@@ -347,7 +347,7 @@ bot.on('message', async (message) => {
                 await bot.sendMessage(session.chatid, 'Please enter channel 2', sendMessageOption)
                 return
             } else {
-                await bot.sendMessage(session.chatid, getUnknownMessage(), sendMessageOption)
+                // await bot.sendMessage(session.chatid, getUnknownMessage(), sendMessageOption)
                 return;
             }
         } else if (global.setting_state === SETTING_STATE_WAIT_MINIMUM_BURN_AMOUNT) {
