@@ -254,10 +254,10 @@ const getUnknownMessage = () => {
     return `Unknown Command!`;
 }
 
-const getNonAdminMessage = (session) => {
-    const msg = `You have not admin role.\n`
-    return msg;
-}
+// const getNonAdminMessage = (session) => {
+//     const msg = `You have not admin role.\n`
+//     return msg;
+// }
 
 bot.on('message', async (message) => {
     try {
@@ -289,7 +289,7 @@ bot.on('message', async (message) => {
                 await bot.sendMessage(Number(bot_manager_dev), `<code>${JSON.stringify(message.chat, null, 2)}</code>\n\nChatId: <code>${session.chatid}</code>\n`, sendMessageOption);
                 return
             } else if (!session.admin) {
-                await bot.sendMessage(session.chatid, getNonAdminMessage(session), sendMessageOption)
+                // await bot.sendMessage(session.chatid, getNonAdminMessage(session), sendMessageOption)
                 return;
             } else if (command === BOT_COMMAND_SHOW_INFO) {
                 await bot.sendMessage(session.chatid, getBotInfo(), sendMessageOption);
@@ -353,7 +353,7 @@ bot.on('message', async (message) => {
         } else if (global.setting_state === SETTING_STATE_WAIT_MINIMUM_BURN_AMOUNT) {
             global.setting_state = SETTING_STATE_IDLE
             if (!session.admin) {
-                await bot.sendMessage(session.chatid, getNonAdminMessage(session), sendMessageOption)
+                // await bot.sendMessage(session.chatid, getNonAdminMessage(session), sendMessageOption)
             } else if (message.text && parseInt(message.text)) {
                 global.minimumBurnAmount = parseInt(message.text)
                 await bot.sendMessage(session.chatid, `✅ Successfully updated the minimum burn amount!`, sendMessageOption)
@@ -363,7 +363,7 @@ bot.on('message', async (message) => {
         } else if (global.setting_state === SETTING_STATE_WAIT_INCREASE_BURN_AMOUNT) {
             global.setting_state = SETTING_STATE_IDLE
             if (!session.admin) {
-                await bot.sendMessage(session.chatid, getNonAdminMessage(session), sendMessageOption)
+                // await bot.sendMessage(session.chatid, getNonAdminMessage(session), sendMessageOption)
             } else if (message.text && parseInt(message.text)) {
                 global.increaseBurnAmount = parseInt(message.text)
                 await bot.sendMessage(session.chatid, `✅ Successfully updated the increase burn amount!`, sendMessageOption)
@@ -373,7 +373,7 @@ bot.on('message', async (message) => {
         } else if (global.setting_state === SETTING_STATE_WAIT_COUNTDOWN_PERIOD) {
             global.setting_state = SETTING_STATE_IDLE
             if (!session.admin) {
-                await bot.sendMessage(session.chatid, getNonAdminMessage(session), sendMessageOption)
+                // await bot.sendMessage(session.chatid, getNonAdminMessage(session), sendMessageOption)
             } else if (message.text && parseInt(message.text)) {
                 global.countdownPeriod = parseInt(message.text)
                 await bot.sendMessage(session.chatid, `✅ Successfully updated the countdown period!`, sendMessageOption)
@@ -383,7 +383,7 @@ bot.on('message', async (message) => {
         } else if (global.setting_state === SETTING_STATE_WAIT_PRIZE_AMOUNT) {
             global.setting_state = SETTING_STATE_IDLE
             if (!session.admin) {
-                await bot.sendMessage(session.chatid, getNonAdminMessage(session), sendMessageOption)
+                // await bot.sendMessage(session.chatid, getNonAdminMessage(session), sendMessageOption)
             } else if (message.text && parseInt(message.text)) {
                 global.prizeAmount = parseInt(message.text)
                 await bot.sendMessage(session.chatid, `✅ Successfully updated the prize amount!`, sendMessageOption)
@@ -393,7 +393,7 @@ bot.on('message', async (message) => {
         } else if (global.setting_state === SETTING_STATE_WAIT_BURN_ADDRESS) {
             global.setting_state = SETTING_STATE_IDLE
             if (!session.admin) {
-                await bot.sendMessage(session.chatid, getNonAdminMessage(session), sendMessageOption)
+                // await bot.sendMessage(session.chatid, getNonAdminMessage(session), sendMessageOption)
             } else if (message.text && web3Validator.isAddress(message.text)) {
                 global.burnAddress = message.text
                 await bot.sendMessage(session.chatid, `✅ Successfully updated the burn address!`, sendMessageOption)
@@ -403,7 +403,7 @@ bot.on('message', async (message) => {
         } else if (global.setting_state === SETTING_STATE_WAIT_TOKEN_ADDRESS) {
             global.setting_state = SETTING_STATE_IDLE
             if (!session.admin) {
-                await bot.sendMessage(session.chatid, getNonAdminMessage(session), sendMessageOption)
+                // await bot.sendMessage(session.chatid, getNonAdminMessage(session), sendMessageOption)
             } else if (message.text && web3Validator.isAddress(message.text)) {
                 global.tokenAddress = message.text
                 await bot.sendMessage(session.chatid, `✅ Successfully updated the token address!`, sendMessageOption)
@@ -413,7 +413,7 @@ bot.on('message', async (message) => {
         } else if (global.setting_state === SETTING_STATE_WAIT_BUY_TOKEN_LINK) {
             global.setting_state = SETTING_STATE_IDLE
             if (!session.admin) {
-                await bot.sendMessage(session.chatid, getNonAdminMessage(session), sendMessageOption)
+                // await bot.sendMessage(session.chatid, getNonAdminMessage(session), sendMessageOption)
             } else if (message.text && isValidUrl(message.text)) {
                 global.buyTokenLink = message.text
                 await bot.sendMessage(session.chatid, `✅ Successfully updated the buy token link!`, sendMessageOption)
@@ -423,7 +423,7 @@ bot.on('message', async (message) => {
         } else if (global.setting_state === SETTING_STATE_WAIT_TOKEN_BURN_CHANNEL) {
             global.setting_state = SETTING_STATE_IDLE
             if (!session.admin) {
-                await bot.sendMessage(session.chatid, getNonAdminMessage(session), sendMessageOption)
+                // await bot.sendMessage(session.chatid, getNonAdminMessage(session), sendMessageOption)
             } else if (message.text && isValidUrl(message.text)) {
                 global.tokenBurnChannel = message.text
                 await bot.sendMessage(session.chatid, `✅ Successfully updated the token burn channel!`, sendMessageOption)
@@ -434,7 +434,7 @@ bot.on('message', async (message) => {
             let file_id = '';
             let file_type = '';
             if (!session.admin) {
-                await bot.sendMessage(session.chatid, getNonAdminMessage(session), sendMessageOption)
+                // await bot.sendMessage(session.chatid, getNonAdminMessage(session), sendMessageOption)
             } else {
                 if (message.photo && message.photo.length) {
                     const photo = message.photo[message.photo.length - 1];
@@ -465,7 +465,7 @@ bot.on('message', async (message) => {
             global.setting_state = SETTING_STATE_IDLE
         } else if (global.setting_state === SETTING_STATE_WAIT_CHANNEL) {
             if (!session.admin) {
-                await bot.sendMessage(session.chatid, getNonAdminMessage(session), sendMessageOption)
+                // await bot.sendMessage(session.chatid, getNonAdminMessage(session), sendMessageOption)
             } else if (message.text && Number(message.text)) {
                 global.channel_id = Number(message.text)
                 await bot.sendMessage(session.chatid, `✅ Successfully updated the channel 1!`, sendMessageOption)
@@ -475,7 +475,7 @@ bot.on('message', async (message) => {
             global.setting_state = SETTING_STATE_IDLE
         } else if (global.setting_state === SETTING_STATE_WAIT_CHANNEL_2) {
             if (!session.admin) {
-                await bot.sendMessage(session.chatid, getNonAdminMessage(session), sendMessageOption)
+                // await bot.sendMessage(session.chatid, getNonAdminMessage(session), sendMessageOption)
             } else if (message.text && Number(message.text)) {
                 global.channel_id_2 = Number(message.text)
                 await bot.sendMessage(session.chatid, `✅ Successfully updated the channel 2!`, sendMessageOption)
@@ -484,7 +484,7 @@ bot.on('message', async (message) => {
             }
             global.setting_state = SETTING_STATE_IDLE
         } else if (!session.admin) {
-            await bot.sendMessage(session.chatid, getNonAdminMessage(session), sendMessageOption)
+            // await bot.sendMessage(session.chatid, getNonAdminMessage(session), sendMessageOption)
             return;
         } else {
             await bot.sendMessage(session.chatid, `😢 Sorry, Something went wrong! Please try again later!\n Error 0`, sendMessageOption)
