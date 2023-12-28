@@ -687,11 +687,7 @@ const competitionMessage = async (msgType, newBurner = '') => {
         const total = gCompInfo.curCntDown - Math.floor(Date.now() / 1000);
         const hours = Math.round(total / (60 * 60));
 
-        const period = gCompInfo.curCntDownPeriod;
-        const pSeconds = Math.floor((period) % 60);
-        const pMinutes = Math.floor((period / 60) % 60);
-        const pHours = Math.floor((period / (60 * 60)) % 24);
-        const pDays = Math.floor((period / (60 * 60 * 24)));
+        const pHours = Math.round(gCompInfo.curCntDownPeriod / (60 * 60));
 
         const tokenLink = `<a href="${CHAIN_BSC.chainScan}/token/${gCompInfo.tokenAddress}">$${gCompInfo.symbol}</a>`
 
@@ -703,7 +699,7 @@ const competitionMessage = async (msgType, newBurner = '') => {
             msg += `<b>🏆 PRIZE:</b> ${gCompInfo.prizeAmount} BUSD\n\n`;
             msg += `<b>🎁 AIRDROP:</b> Every participant will receive an airdrop of our next token launch\n\n`;
             msg += `🔼 Every hour, the minimum burn required increases by ${gCompInfo.incBurn} ${tokenLink}\n`;
-            msg += `🔄 Every new burn resets the countdown to ${pDays > 0 ? pDays + ` days ` : ``}${pHours > 0 ? pHours + ` hours ` : ``}${pMinutes > 0 ? pMinutes + ` minutes ` : ``}${pSeconds > 0 ? pSeconds + ` seconds ` : ``}\n`;
+            msg += `🔄 Every new burn resets the countdown to ${pHours} hours\n`;
             msg += `🔄 Every new burn resets the minimum burn to ${gCompInfo.minBurn} ${tokenLink}\n`;
         } else if (msgType == MESSAGE_TYPE_MIN_BURN_INCREASE) { // Minimum Burn Increased!
             msg = `<b>📣 MINIMUM BURN INCREASED!</b>\n\n`;
@@ -713,7 +709,7 @@ const competitionMessage = async (msgType, newBurner = '') => {
             msg += `<b>🏆 PRIZE:</b> ${gCompInfo.prizeAmount} BUSD\n\n`;
             msg += `<b>🎁 AIRDROP:</b> Every participant will receive an airdrop of our next token launch\n\n`;
             msg += `🔼 Every hour, the minimum burn required increases by ${gCompInfo.incBurn} ${tokenLink}\n`;
-            msg += `🔄 Every new burn resets the countdown to ${pDays > 0 ? pDays + ` days ` : ``}${pHours > 0 ? pHours + ` hours ` : ``}${pMinutes > 0 ? pMinutes + ` minutes ` : ``}${pSeconds > 0 ? pSeconds + ` seconds ` : ``}\n`;
+            msg += `🔄 Every new burn resets the countdown to ${pHours} hours\n`;
             msg += `🔄 Every new burn resets the minimum burn to ${gCompInfo.minBurn} ${tokenLink}\n`;
         } else if (msgType == MESSAGE_TYPE_NEW_BURNER) { // New Burner
             msg = `<b>📣 WE HAVE A NEW BURNER!</b>\n\n`;
@@ -725,7 +721,7 @@ const competitionMessage = async (msgType, newBurner = '') => {
             msg += `<b>🏆 PRIZE:</b> ${gCompInfo.prizeAmount} BUSD\n\n`;
             msg += `<b>🎁 AIRDROP:</b> Every participant will receive an airdrop of our next token launch\n\n`;
             msg += `🔼 Every hour, the minimum burn required increases by ${gCompInfo.incBurn} ${tokenLink}\n`;
-            msg += `🔄 Every new burn resets the countdown to ${pDays > 0 ? pDays + ` days ` : ``}${pHours > 0 ? pHours + ` hours ` : ``}${pMinutes > 0 ? pMinutes + ` minutes ` : ``}${pSeconds > 0 ? pSeconds + ` seconds ` : ``}\n`;
+            msg += `🔄 Every new burn resets the countdown to ${pHours} hours\n`;
             msg += `🔄 Every new burn resets the minimum burn to ${gCompInfo.minBurn} ${tokenLink}\n`;
         } else if (msgType === MESSAGE_TYPE_WINNER) { // Winner
             msg = `<b>🏁 WE HAVE A WINNER!</b>\n\n`;
