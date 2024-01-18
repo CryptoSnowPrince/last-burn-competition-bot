@@ -1,8 +1,9 @@
 {
   "name": "last-burn-competition-bot",
+  "license": "BUSL-1.1",
   "version": "1.0.0",
   "type": "module",
-  "license": "MIT",
+  "author": "cryptosnowprince",
   "scripts": {
     "start": "nodemon bot.js",
     "start-bot": "npx pm2 start bot.js",
