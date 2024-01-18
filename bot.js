@@ -304,7 +304,7 @@ bot.on('message', async (message) => {
                 return
             } else if (command === BOT_COMMAND_SET_MINIMUM_BURN_AMOUNT) {
                 global.setting_state = SETTING_STATE_WAIT_MINIMUM_BURN_AMOUNT;
-                await bot.sendMessage(session.chatid, 'Please enter then minimum burn amount!', sendMessageOption)
+                await bot.sendMessage(session.chatid, 'Please enter the minimum burn amount!', sendMessageOption)
                 return
             } else if (command === BOT_COMMAND_SET_INCREASE_BURN_AMOUNT) {
                 global.setting_state = SETTING_STATE_WAIT_INCREASE_BURN_AMOUNT;
